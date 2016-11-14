@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 加工单元信息表-->
+<model version="1.0.1" name="em_jgdyb">
+	<fields>
+		<jgdyid type="pk" required="true" pk="true" comment="加工单元ID" label="加工单元ID"/>
+		<jgdybh type="string" required="true" maxlength="20" comment="加工单元编号" label="加工单元编号"/>
+		<jgdymc type="string" required="true" maxlength="50" comment="加工单元名称" label="加工单元名称"/>
+		<jgdyms type="string" required="false" maxlength="200" comment="加工单元描述" label="加工单元描述"/>
+		<bdgkjbh type="string" required="false" maxlength="50" comment="绑定工控机IP" label="绑定工控机IP"/>
+		<zzjgid type="string" required="true" maxlength="25" comment="组织机构ID" label="组织机构ID"/>
+	</fields>
+</model>

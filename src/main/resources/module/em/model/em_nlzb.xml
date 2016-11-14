@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 能力组信息表-->
+<model version="1.0.0" name="em_nlzb">
+	<fields>
+		<nlzid type="pk" required="true" pk="true" comment="能力组ID" label="能力组ID"/>
+		<nlzbh type="string" required="true" maxlength="20" comment="能力组编号" label="能力组编号"/>
+		<nlzmc type="string" required="true" maxlength="50" comment="能力组名称" label="能力组名称"/>
+		<nlzms type="string" required="false" maxlength="200" comment="能力组描述" label="能力组描述"/>
+		<zzjgid type="string" required="true" maxlength="25" comment="组织机构ID" label="组织机构ID"/>
+	</fields>
+</model>
