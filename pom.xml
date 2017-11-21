@@ -7,7 +7,7 @@
    <properties>
     <encoding>UTF-8</encoding>
     <jdk.version>1.5</jdk.version>
-    <platform.version>0.0.3-SNAPSHOT</platform.version>
+    <platform.version>0.0.4-SNAPSHOT</platform.version>
     <guava.version>19.0</guava.version>
   </properties>
   
