@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 设备类型表 -->
+<model version="1.0.1" name="em_sblxb">
+	<fields>
+		<sblxid type="pk" required="true" pk="true" comment="设备类型ID" label="设备类型ID"/>
+		<sblxbh type="string" required="false" maxlength="20" comment="设备类型编号" label="设备类型编号"/>
+		<sblxmc type="string" required="false" maxlength="50" comment="设备类型名称" label="设备类型名称"/>
+		<xhph type="string" required="false" maxlength="50" comment="型号/牌号" label="型号/牌号"/>
+		<skxtdm type="dict" required="false" comment="数控系统" label="数控系统"/>
+		<nlms type="string" required="false" maxlength="200" comment="能力描述" label="能力描述"/>
+		<qybsdm type="integer" required="false" comment="启动标志" label="启动标志"/>
+		<sbfldm type = "dict" required = "true"  comment="设备分类代码" label="设备分类代码"/>
+	</fields>
+</model>

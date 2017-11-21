@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 设备信息表 -->
+<model version="1.0.1" name="em_sbxxb">
+	<fields>
+		<sbid type="pk" required="true" pk="true" comment="设备ID" label="设备ID"/>
+		<sbbh type="string" required="false" maxlength="20" comment="设备编号" label="设备编号"/>
+		<sbmc type="string" required="true" maxlength="50" comment="设备名称" label="设备名称"/>
+		<sblxid type="pk" required="false" maxlength="25" comment="设备类型ID" label="设备类型ID"/>
+		<!--<sbflid type="string" required="false" maxlength="25" comment="设备分类ID" label="设备分类ID"/> -->
+		<ccbh type="string" required="false" maxlength="20" comment="出厂编号" label="出厂编号"/>
+		<ip type="string" required="false" maxlength="20" comment="IP" label="IP"/>
+		<cj type="string" required="false" maxlength="50" comment="生产厂家" label="生产厂家"/>
+		<zzjgid type="pk" required="false" comment="所属部门ID" label="所属部门ID"/>
+		<jyrq type="timestamp" required="false" comment="进/验日期" label="进/验日期"/>
+		<sbwz type="string" required="false" maxlength="200" comment="设备位置" label="设备位置"/>
+		<kfid type="pk" required="false" comment="所属线边库" label="所属线边库"/>
+		<kfid type="pk" required="false" comment="所属线边库" label="所属线边库"/>
+		<sbtpid type="string" required="false" comment="设备图片ID" label="设备图片ID"/>
+	</fields>
+</model>

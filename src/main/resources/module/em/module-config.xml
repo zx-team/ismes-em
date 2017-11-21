@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="em" version="1.0.0" category="system">
+	<information>
+		<name>Factory Management</name>
+		<vendor>
+			<name>Isesol isMES</name>
+			<url>http://www.isesol.com/</url>
+		</vendor>
+		<description>User is a module which adds user functionality to system.</description>
+		<license>AGPL</license>
+	</information>
+	<activities>
+		<activity name="service" dialect="java" class="com.isesol.mes.ismes.em.service.EquipmentManagementService"/>
+		<activity name="abilitygroup" dialect="java" roles="SYSTEM_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.em.activity.AbilityGroupActivity"/>
+		<activity name="sbtz" dialect="java" roles="SYSTEM_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.em.activity.SbtzActivity"/>
+		<activity name="sblx" dialect="java" roles="SYSTEM_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.em.activity.EquipmentTypeActivity"/>
+		<activity name="jgdy" dialect="java" roles="SYSTEM_MANAGEMENT_ROLE" class="com.isesol.mes.ismes.em.activity.JgdyActivity"/>
+	</activities>
+	<roles>
+		<role name="SYSTEM_MANAGEMENT_ROLE" label="系统管理人员_设备管理" description="系统基础信息设置" />
+	</roles>
+	<menus>
+		<!-- 工厂建模（一级） -->
+		<category name="factory_modeling" label="工厂建模" icon="#00cc92;Factory_modeling"  weight="2"/>
+		<!-- 设备管理（二级） -->
+		<category name="equipment_manager" label="设备管理" icon="button " category = "factory_modeling" weight="20"/>
+		<menu name="equipment_type" label="设备类型管理" activity="sblx" activity-method="query_sblx" category="equipment_manager"
+			 roles="SYSTEM_MANAGEMENT_ROLE" description="设备类型管理" icon="button" weight="100"/>
+		<menu name="equipment_account" label="设备台帐管理" activity="sbtz" activity-method="query_sbtz" category="equipment_manager"
+			 roles="SYSTEM_MANAGEMENT_ROLE" description="设备台帐管理" icon="button" weight="200"/>
+		 <menu name="jgdy_list" label="加工单元管理" activity="jgdy" activity-method="index" category="equipment_manager"
+			 roles="SYSTEM_MANAGEMENT_ROLE" description="加工单元管理" icon="button" weight="300"/>
+	</menus>
+	<services>
+		<service name = "emservice_sbxx" activity = "service" activity-method = "query_sbxxList"/>
+		<service name = "emservice_sbxxbysbwz" activity = "service" activity-method = "query_sbxxListbysbwz"/>
+		<service name = "emservice_sbxxBysbbh" activity = "service" activity-method = "query_sbxxListBysbbh"/>
+		<service name = "emservice_sbxxList" activity = "service" activity-method = "query_sbxxListBybh"/>
+		<service name = "emservice_sbxxFile" activity = "service" activity-method = "query_sbxxFile"/>
+		<service name = "emservice_sbxxInfo" activity = "service" activity-method = "query_sbxxInfo"/>
+		<service name = "emservice_jgdyInfo" activity = "service" activity-method = "query_jgdyInfo"/>
+		<service name = "emservice_sbxxInfoBySbbh" activity = "service" activity-method = "query_sbxxInfoBySbbh"/>
+		<service name = "emservice_nlzList" activity = "service" activity-method = "query_nlzList"/>
+		<service name = "emservice_sbrl" activity = "service" activity-method = "query_sbrl"/>
+		<service name = "emservice_sbgs" activity = "service" activity-method = "query_sbgs"/>
+		<service name = "emservice_sbxxByNlzid" activity = "service" activity-method = "query_sbxxByNlzid"/>
+		<service name = "pic_display_server" activity = "service" activity-method = "pic_display"/>
+		<service name = "query_sb_cannotJobTime_service" activity = "service" activity-method = "query_sb_cannotJobTime"/>
+		<service name = "query_sb_shouldJobTime" activity = "service" activity-method = "query_sb_shouldJobTime"/>
+		<service name = "query_sblx_service" activity = "service" activity-method = "query_sblx_by_param"/>
+		<service name = "emservice_jgdyById" activity = "service" activity-method = "query_jgdyById"/>
+		<service name = "emservice_jgdyByIds" activity = "service" activity-method = "query_jgdyByIds"/>
+		<service name = "emservice_jgdyByParam" activity = "service" activity-method = "query_jgdyByParam"/>
+		<service name = "emservice_jgdyBySblxids" activity = "service" activity-method = "query_jgdyBySblxids"/>
+		<service name = "emservice_jgdyByGkjIP" activity = "service" activity-method = "query_jgdyByGkjIP"/>
+		<service name = "emservice_qjgdyandsbxxbysbwz" activity = "service" activity-method = "query_jgdyandsbxxbysbwz"/>
+		<service name = "emservice_sbdwjs" activity = "service" activity-method = "sbdwjs"/>
+		<service name = "emservice_sbdwql" activity = "service" activity-method = "sbdwql"/>
+		<service name = "emservice_query_sbxx_by_sbbh" activity = "service" activity-method = "query_sbxx_by_sbbh"/>
+		<service name = "emservice_all_sb" activity = "service" activity-method = "query_all_sb"/>
+		<service name = "emservice_jgdysbglb" activity = "service" activity-method = "query_jgdysbglb"/>
+		<service name = "emservice_query_djsm" activity = "service" activity-method = "query_djsm"/>
+		<service name = "emservice_query_jgdyb" activity = "service" activity-method = "query_jgdyb"/>
+	</services>
+</module>

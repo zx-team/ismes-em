@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 设备工时表 -->
+<model version="1.0.0" name="em_sbgsb">
+	<fields>
+		<sbgsid type="pk" pk="true" comment="设备工时ID" label="设备工时ID"/>
+		<sbid type="pk" required="true" comment="设备ID" label="设备ID"/>
+		<gsmbid type="string" required="false" maxlength="50" comment="工时模板ID" label="工时模板ID"/>
+		<ksrq type="date" required="false" comment="开始日期" label="开始日期"/>
+		<jsrq type="date" required="false" comment="结束日期" label="开始日期"/>
+	</fields>
+</model>

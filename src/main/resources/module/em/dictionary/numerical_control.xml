@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category name="SKXT" label="数控系统"  description="数控系统">
+	<field name="" value="10" label="i5" parent="" state="valid"/>
+	<field name="" value="20" label="西门子" parent="" state="valid"/>
+	<field name="" value="30" label="funuc" parent="" state="valid"/>
+</category>

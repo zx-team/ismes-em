@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="em_sblx" title="设备类型管理">
+	<normal-actions>
+		<button name="addBtn" icon="icon-Add_to" label="添加"  type="button" onClick="addRow"></button>
+		<button name="queryBtn" icon="icon-query" label="查询"  type="button" onClick="openQueryWindow"></button>
+	</normal-actions>
+	
+	<table name="table_sblx" scroll="false"  url="/sblx/table_sblx" minheight="430" layoutconstraint="md:12;sm:12;"  onLoaded="table_editreset"  onDblClickRow="dbltable_sblxClickrow">
+		<column label="设备类型编号" name="sblxbh"  editable="true" editrules="{required:true}"></column>
+		<column label="设备类型ID" name="sblxid" key="true" hidden="true" editrules="{required:true}"></column>
+		<column label="设备类型名称" name="sblxmc"  editable="true" editrules="{required:true}"></column>
+		<column label="设备分类" name="sbfldm"  type = "dict" editable="true" dictionary="SBFL" editrules="{required:true}"></column>
+		<column label="型号/牌号" name="xhph" editable="true" ></column>
+		<column label="数控系统" name="skxtdm" editable="true" type = "dict" dictionary="SKXT" ></column>
+		<column label="能力描述" name="nlms"  editable="true" ></column>
+		<column label="启动标志" name="qybsdm"  type = "dict"  editable="true" dictionary="QYBJ" editrules="{required:true}"></column>
+		<column label="操作" type="operation">
+		<attribute name="formatoptions"><![CDATA[
+					[
+						{
+							name:"edit",
+							icon:"icon-edit",
+							label:"编辑",
+							click:editRow
+						},
+						{
+							name:"del",
+							icon:"icon-delete",
+							label:"删除",
+							click:delRow
+						}
+					]
+				]]></attribute>
+		</column>
+		<column label="新增标记" name="addSign"  hidden="true" ></column>
+	</table>
+	<modal name="qyeryModal" heading="查询设备类型信息" sizing="large" show="false" keyboard="true" onShown="qyeryModalOnShown">
+		<modal-body>
+			<form name="qyerysbtzForm"  horizontal="true">
+				<form-body>
+					<form-group>
+						<label for="query_sblxbh" text="设备类型编号" layoutconstraint="md:2;sm:2"/>
+						<text name="query_sblxbh" placeholder="请输入设备类型编号" validate="{required:false}" layoutconstraint="md:4;sm:4;"/>
+						<label for="query_sblxmc" text="设备类型名称" layoutconstraint="md:2;sm:2"/>
+						<text name="query_sblxmc" placeholder="请输入设备类型名称" layoutconstraint="md:4;sm:4;"/>
+					</form-group>
+					<form-group>
+						<label for="query_sbfl" text="设备分类" layoutconstraint="md:2"/>
+					    <select name="query_sbfl" validate="{required:true}"  placeholder="请选择设备分类" layoutconstraint="md:4;"  dictionary="SBFL"></select>
+						<label for="query_skxt" text="数控系统" layoutconstraint="md:2"/>
+					    <select name="query_skxt" validate="{required:true}"  placeholder="请选择数控系统" layoutconstraint="md:4;"  dictionary="SKXT"></select>
+ 					</form-group>
+ 					<form-group>
+						<label for="query_phxh" text="牌号/型号" layoutconstraint="md:2;sm:2"/>
+						<text name="query_phxh" placeholder="请输入牌号/型号" layoutconstraint="md:4;sm:4;"/>
+						<label for="query_nlms" text="能力描述" layoutconstraint="md:2;sm:2"/>
+						<text name="query_nlms" placeholder="请输入能力描述" layoutconstraint="md:4;sm:4;"/>
+					</form-group>
+					<form-group>
+						<label for="query_qybz" text="启用标志" layoutconstraint="md:2"/>
+					    <select name="query_qybz" dictionary="QYBJ" placeholder="请选择启用标志"  layoutconstraint="md:4;"></select>
+ 					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+				<button name="resetqyeryModalClick" label="重置" type="button" onClick="resetQueryWindow"></button>
+				<button name="closeqyeryModalClick" label="取消" type="button" onClick="closeQueryWindow"></button>
+				<button name="qyeryModalClick" label="查询" type="button" context="primary" onClick="queryBtnClick"></button>
+				
+		</modal-footer>
+	</modal>
+	<attribute name="javascript">
+		<![CDATA[
+		
+		//记录全局
+		var editid = "";//rowid
+		var editsbid = "";//设备类型ID
+		var editsblxbh = "";//设备类型编号
+		var editsblxmc = "";//设备类型名称
+		var editxhph = "";//型号/牌号 dict
+		var editskxtdm = "";//数控系统
+		var editnlms = "";//能力描述
+		var editsbfldm = "";//设备分类代码dict
+		var editqybsdm = "";//启用标志dict
+		
+		document.onkeydown=function(event){ 
+			var e = event || window.event || arguments.callee.caller.arguments[0];  
+			if(e && e.keyCode==13){
+			
+			 	saveBtnClick();//回车保存
+			}   
+			if(e && e.keyCode==27){     
+				ui.table("table_sblx").restoreRow(editid);
+			 	editid = "";//ESC退出编辑
+			}     
+		}; 
+		
+		function queryjgrw_Clickrow(rowid,status) {
+			openQueryWindow();
+		}
+		function openQueryWindow() {
+	    	ui.modal("qyeryModal").show();
+	    }
+		function qyeryModalOnShown() {
+	    	resetQueryWindow();
+	    }
+	    function closeQueryWindow() {
+	    	ui.modal("qyeryModal").hide();
+	    }
+	    
+	    function resetQueryWindow() {
+	    	 $('#qyerysbtzForm')[0].reset();
+	    	 ui.select('query_sbfl').val('');
+	    	 ui.select('query_skxt').val('');
+	    	 ui.select('query_qybz').val('');
+	    }
+	    
+	    function queryBtnClick(){
+			var data_row = {};
+			data_row.query_sblxbh = ui.text('query_sblxbh').val();
+			data_row.query_sblxmc = ui.text('query_sblxmc').val();
+			data_row.query_phxh = ui.text('query_phxh').val();
+			data_row.query_nlms = ui.text('query_nlms').val();
+			data_row.query_sbfl = ui.select('query_sbfl').val();
+			data_row.query_skxt = ui.select('query_skxt').val();
+			data_row.query_qybz = ui.select('query_qybz').val();
+			ui.table("table_sblx").search(data_row);
+			closeQueryWindow();
+		}
+		
+		//加载结束初始化
+		function table_editreset() {
+			editid = "";
+		}
+			//新增一行
+		function addRow() {
+		
+			if(("" != editid && rowid!=editid)&&(editsblxbh != $('#'+editid+"_sblxbh").val()||editsblxmc != $('#'+editid+"_sblxmc").val()
+			 ||editnlms != $('#'+editid+"_nlms").val())) {
+			//不判断下拉框的数据，下来框需要加载完成后才能取到值||editqybsdm != $('#'+editid+"_qybsdm").val()||editskxtdm != $('#'+editid+"_skxtdm").val()
+				ui.confirm("您是否要保存该条记录？", function(data){
+				if(data){
+						saveBtnClick();
+					}else{
+						ui.table("table_sblx").restoreRow(editid);
+						var rowid = (new Date()).getTime();	
+						ui.table("table_sblx").addRow(rowid,{addSign:"1"},"first");
+						ui.table("table_sblx").editRow(rowid);
+						editid = rowid;
+						editsblxbh = $('#'+editid+"_sblxbh").val();
+						editsblxmc = $('#'+editid+"_sblxmc").val();
+						editskxtdm = $('#'+editid+"_skxtdm").val();
+						editnlms = $('#'+editid+"_nlms").val();
+						//editqybsdm = $('#'+editid+"_qybsdm").val();
+					}
+				});
+			}else {
+				if('1'==ui.table("table_sblx").getCell(editid,"addSign"))
+				{
+					ui.warn("请先保存当前信息!", "提示!");
+					return;
+				}
+				
+				ui.table("table_sblx").restoreRow(editid);
+				var rowid = (new Date()).getTime();																											 
+				ui.table("table_sblx").addRow(rowid,{addSign:"1"},"first");
+				ui.table("table_sblx").editRow(rowid);
+				ui.table("table_sblx").selectRow(rowid);
+				editid = rowid;
+				
+				editsblxbh = $('#'+editid+"_sblxbh").val();
+				editsblxmc = $('#'+editid+"_sblxmc").val();
+				editskxtdm = $('#'+editid+"_skxtdm").val();
+				editnlms = $('#'+editid+"_nlms").val();
+			}
+		}
+		//删除数据	
+		function delRow(name,rowid){
+		
+		 	if('1'==ui.table("table_sblx").getCell(rowid,"addSign"))
+		 	{
+		 		ui.table("table_sblx").removeRow(rowid);
+		 		editid = "";
+		 		return false;
+		 	}
+		 	ui.confirm("您确定要删除该条记录吗？", function(req){
+			if(req){
+		 	$.ajax({
+		        type: "POST",
+		        url:  ui.getRealUrl("/sblx/del_sblx"),
+		        async: false,
+		        data: {data_list : rowid},
+		        success: function(data){
+		          	ui.table("table_sblx").removeRow(rowid);
+		            ui.success("删除成功！");
+		         },
+		         error:function(){
+		         	//ui.table("table_sblx").reload();
+		            ui.error()("删除失败！");
+		          }
+		     });
+		     }
+		     });
+		}
+			
+		//保存
+		function saveBtnClick(){
+			var data_list= [];
+			if(""!=editid)
+			{
+				if(!ui.table("table_sblx").validate(editid))
+				{
+					ui.warn("请检查录入数据!", "提示!");
+					return false;
+				}
+				var data_row = {};
+				data_row.sblxid = ui.table("table_sblx").getCell(editid,"sblxid");
+				data_row.sblxbh = $('#'+editid+"_sblxbh").val();
+				data_row.sblxmc = $('#'+editid+"_sblxmc").val();
+				data_row.skxtdm =   $('#'+editid+"_skxtdm").val();
+				data_row.nlms =   $('#'+editid+"_nlms").val();
+				data_row.sbfldm = $('#'+editid+"_sbfldm").val();
+				data_row.qybsdm = $('#'+editid+"_qybsdm").val();
+				data_row.xhph = $('#'+editid+"_xhph").val();
+				data_row.addSign = ui.table("table_sblx").getCell(editid,"addSign");
+				data_list.push(data_row);
+				$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/sblx/update_sblx"),
+		             async: false,
+		             data: {data_list : JSON.stringify(data_list)},
+		             success: function(data){
+			             if(data.code == 0){
+			                editid = "";
+			             	ui.table("table_sblx").reload();
+			             	ui.success("保存成功！");
+			             }
+			             else{
+			             	ui.error(data.message,"提示");
+			             }
+		             },
+		             error:function(){
+			            ui.error("保存失败！");
+			         	ui.table("table_sblx").reload();
+		          	}
+		         });
+			}
+		}
+		function editRow(name,rowid){
+			dbltable_sblxClickrow(rowid,'') ;
+		}
+		
+		//双击进入修改
+		function dbltable_sblxClickrow(rowid,status) {
+		
+		if(("" != editid && rowid!=editid)&&(editsblxbh != $('#'+editid+"_sblxbh").val()||editsblxmc != $('#'+editid+"_sblxmc").val()
+			 ||editnlms != $('#'+editid+"_nlms").val())) {
+			//不判断下拉框的数据，下来框需要加载完成后才能取到值||editqybsdm != $('#'+editid+"_qybsdm").val()||editskxtdm != $('#'+editid+"_skxtdm").val()
+				ui.confirm("您是否要保存该条记录？", function(data){
+				if(data){
+						saveBtnClick();
+					}else{
+						ui.table("table_sblx").restoreRow(editid);
+						ui.table("table_sblx").editRow(rowid);
+						editid = rowid;
+						editsblxbh = $('#'+editid+"_sblxbh").val();
+						editsblxmc = $('#'+editid+"_sblxmc").val();
+						editskxtdm = $('#'+editid+"_skxtdm").val();
+						editnlms = $('#'+editid+"_nlms").val();
+						//editqybsdm = $('#'+editid+"_qybsdm").val();
+					}
+				});
+			}else {
+				if(rowid!=editid){
+					ui.table("table_sblx").restoreRow(editid);
+					ui.table("table_sblx").editRow(rowid);
+					editid = rowid;
+					//alert(ui.table("table_sblx").getEditRowsData([editid]));
+					editsblxbh = $('#'+editid+"_sblxbh").val();
+					editsblxmc = $('#'+editid+"_sblxmc").val();
+					editskxtdm = $('#'+editid+"_skxtdm").val();
+					editnlms = $('#'+editid+"_nlms").val();
+					//editqybsdm = $('#'+editid+"_qybsdm").val();
+				}
+				
+			}
+		}
+		
+		]]>
+	</attribute>
+</view>

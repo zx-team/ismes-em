@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category name="sbrl_rlzt" label="设备日历状态"  description="设备日历状态">
+	<field name="" value="10" label="工作日" parent="" state="valid"/>
+	<field name="" value="20" label="非工作日" parent="" state="valid"/>
+</category>
+

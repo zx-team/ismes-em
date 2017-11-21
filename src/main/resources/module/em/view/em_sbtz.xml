@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="em_sbtz" title="设备台账管理">
+	<normal-actions>
+		<button name="addBtn" label="添加"  type="button" icon="icon-Add_to" onClick="addsbtzRow"></button>
+		<button name="queryBtn" label="查询"  type="button" icon="icon-query" onClick="openQueryWindow"></button>
+	</normal-actions>
+	<table name="table_sbtz" scroll="false"  url="/sbtz/table_sbtz" minheight="430"  multiselect="true"
+		layoutconstraint="md:12;sm:12;"  onLoaded="table_editreset"  onDblClickRow="table_sbtzClickrow">
+		<column label="设备id" name="sbid" key="true" hidden="true"></column>
+		<column label="设备编号" name="sbbh"  editable="true"  editrules="{required:true}"></column>
+		<column label="设备名称" name="sbmc"  editable="true" editrules="{required:true}"></column>
+		<column label="设备分类" name="sbfldm" editable="true" type="dict" dictionary="SBFL" editrules="{required:true}"></column>
+		<column label="设备类型" name="sblxid" type="text" editable="true"  edittype="select" editrules="{required:true}">
+			<attribute name="editoptions">
+				<![CDATA[
+					{
+						url:"/abilitygroup/sbxhSelect",
+						parent:"sbfldm",
+						onChange:function(value,rowid){
+							//ui.info("column salary changed : value="+value+",rowid="+rowid);
+						}
+					}
+				]]>
+			</attribute>
+			<attribute name="formatoptions"><![CDATA[
+					{transform : "sblxmc"}
+			]]></attribute>
+		</column>
+		<column label="设备类型名称" name="sblxmc"  type="transform" />
+		<column label="设备位置" name="sbwz"  editable="true" editrules="{required:true}"></column>
+		<column label="出厂编号" name="ccbh" editable="true" ></column>
+		<column label="IP" name="ip"  editable="true" ></column>
+		<column label="厂家" name="cj"  editable="true" ></column>
+		<column label="进/验日期" name="jyrq" type="date"  editable="true" editrules="{required:true}"></column>
+		<column label="所属机构" name="zzjgid" type="text"   editable="true"  edittype="select"  editrules="{required:true}">
+			<attribute name="editoptions">
+				<![CDATA[
+					{
+						url:"/sbtz/get_cj"
+					}
+				]]>
+			</attribute>
+			<attribute name="formatoptions"><![CDATA[
+					{transform : "zzjgmc"}
+			]]></attribute>
+		</column>
+		<column label="所属机构名称" name="zzjgmc"  type="transform" />
+		<column label="操作" type="operation" width="170" >
+			<attribute name="formatoptions"><![CDATA[
+					[
+						{
+							name:"upload",
+							icon:"icon-upload",
+							label:"上传设备图片",
+							click:openAddWindow
+						},
+						{
+							name:"edit",
+							icon:"icon-edit",
+							label:"编辑",
+							click:editRow
+						},
+						{
+							name:"del",
+							icon:"icon-delete",
+							label:"删除",
+							click:del_sbtz
+						},
+						{
+							name:"calendar_edit",
+							icon:"icon-calendar",
+							label:"设备日历",
+							click:sbrl_func
+						}
+					]
+				]]></attribute>
+		</column>
+		<column label="新增标记" name="addSign"  hidden="true" ></column>
+		<column label="设备图片ID" name="sbtpid"  hidden="true" ></column>
+		<table-actions>
+			<button name="sbgsBtn" label="工时设置" onClick="sbgs_func" tooltip="工时设置"></button>
+			<!-- <button name="sbrlBtn" label="设备日历" onClick="sbrl_func" tooltip="设备日历"></button> -->
+		</table-actions>
+	</table>
+	<modal name="qyeryModal" heading="查询设备信息" sizing="large" show="false" keyboard="true" onShown="qyeryModalOnShown">
+		<modal-body>
+			<form name="qyerysbtzForm"  horizontal="true">
+				<form-body>
+					<form-group>
+						<label for="query_sbbh" text="设备编号" layoutconstraint="md:2;sm:2"/>
+						<text name="query_sbbh" placeholder="请输入设备编号" validate="{required:false}" layoutconstraint="md:4;sm:4;"/>
+						<label for="query_sbmc" text="设备名称" layoutconstraint="md:2;sm:2"/>
+						<text name="query_sbmc" placeholder="请输入设备名称" layoutconstraint="md:4;sm:4;"/>
+					</form-group>
+					<form-group>
+						<label for="query_sbfl" text="设备分类" layoutconstraint="md:2"/>
+					    <select name="query_sbfl" validate="{required:true}"  placeholder="请选择设备分类" layoutconstraint="md:4;"  dictionary="SBFL"></select>
+						<label for="query_sblx"  text="设备类型" layoutconstraint="md:2"/>
+						<select name="query_sblx" parent="query_sbfl"   url="/abilitygroup/sbxhSelect"  validate="{required:false}"  placeholder="请选择设备类型" layoutconstraint="md:4;"></select>
+ 					</form-group>
+ 					<form-group>
+						<label for="query_sbwz" text="设备位置" layoutconstraint="md:2;sm:2"/>
+						<text name="query_sbwz" placeholder="请输入设备位置" validate="{required:false}" layoutconstraint="md:4;sm:4;"/>
+						<label for="query_ccbh" text="出厂编号" layoutconstraint="md:2;sm:2"/>
+						<text name="query_ccbh" placeholder="请输入出厂编号" layoutconstraint="md:4;sm:4;"/>
+					</form-group>
+ 					<form-group>
+						<label for="query_ip" text="IP" layoutconstraint="md:2;sm:2"/>
+						<text name="query_ip" placeholder="请输入IP" validate="{required:false}" layoutconstraint="md:4;sm:4;"/>
+						<label for="query_cj" text="厂家" layoutconstraint="md:2;sm:2"/>
+						<text name="query_cj" placeholder="请输入厂家" layoutconstraint="md:4;sm:4;"/>
+					</form-group>
+					<form-group>
+						<label for="query_jyrqstart" text="进/验日期" layoutconstraint="md:2"/>
+						<bunch layoutconstraint="md:10">
+							<input-inline width="medium">
+							<date name="query_jyrqstart" placeholder="请输入进/验日期" validate="{required:false}"/>
+							</input-inline>
+							<plaintext text="-"/>
+							<input-inline width="medium">
+							<date name="query_jyrqend" placeholder="请输入进/验日期" validate="{required:false}"/>
+							</input-inline>
+						</bunch>
+ 					</form-group>
+					<form-group>
+						<label for="query_ssjg" text="所属机构" layoutconstraint="md:2"/>
+					    <select name="query_ssjg" validate="{required:false}" placeholder="所属机构" layoutconstraint="md:4;"></select>
+ 					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+				<button name="resetqyeryModalClick" label="重置" type="button" onClick="resetQueryWindow"></button>
+				<button name="closeqyeryModalClick" label="取消" type="button" onClick="closeQueryWindow"></button>
+				<button name="qyeryModalClick" label="查询" type="button" context="primary" onClick="queryBtnClick"></button>
+				
+		</modal-footer>
+	</modal>
+	<modal name="addModal" heading="添加设备图片" sizing="large" show="false" keyboard="true"  onShown="addModalOnShown" >
+		<modal-body>
+			<form name="form_add"  horizontal="true"  action="/sbtz/sbtpUpload" multipart="true">
+				<form-body>
+					<form-group>
+						<hidden name="add_sbid"  />
+						<hidden name="add_Sign"  />
+						<label for="add_sbtp" text="设备图片" layoutconstraint="md:2;sm:2"/>
+						<file name="add_sbtp"  layoutconstraint="md:6;sm:6;" validate="{required:true}" />
+					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+			<button name="addBtnSubmit" label="上传" type="button" context="primary" onClick="addBtnClick"/>
+			<button name="closeAddBtn" label="取消" type="button" context="primary"  onClick="closeAddWindow"></button>
+		</modal-footer>
+	</modal>
+	
+	<modal name="sbgs_Modal" heading="设备工时设置" sizing="large" show="false" keyboard="true" >
+		<modal-body>
+			<table name="table_sbgs" scroll="true" height = "400"  multiselect="false" 
+				layoutconstraint="md:5;" caption="设备信息">
+				<column label="设备id" name="sbid" key="true" hidden="true"></column>
+				<column label="设备编号" name="sbbh"  editable="true" ></column>
+				<column label="设备名称" name="sbmc"  editable="true" ></column>
+			</table>
+			
+			<table name="table_sbmbxz" scroll="true" height = "400"  multiselect="false" 
+				layoutconstraint="md:7;" caption="预设计划" url="getSbgs" onDblClickRow="table_sbmbxzClickrow">
+				<column label="id" name="sbgsid" key="true" hidden="true"></column>
+				<column label="名称" name="gsmbid"   type="text" editable="true" edittype="select" editrules="{required:true}" >
+					<attribute name="editoptions"><![CDATA[
+					{
+						url:"gsmb_select",
+						onChange:function(){
+							var gsmbid = $(this).val();
+							$.ajax({
+					             type: "POST",
+					             url:  ui.getRealUrl("gsmbinfo"),
+					             async: false,
+					             data: {gsmbid : gsmbid},
+					             success: function(data){
+					             	var gsmbms = data.gsmbms;
+					             	var rowid = ui.table("table_sbmbxz").getSelectedRows()[0];
+					             	ui.table("table_sbmbxz").setCell(rowid,"gsmbms",gsmbms);
+					             }
+					         });
+						}
+					}
+					]]></attribute>
+					<attribute name="formatoptions"><![CDATA[
+							{transform : "gsmbmc"}
+					]]></attribute>
+				</column>
+				<column label="名称" name="gsmbmc"  type="transform" />
+				<column label="描述" name="gsmbms"  type="text"  editable="false" ></column>
+				<column label="起始日期" name="ksrq"  editable="true" type="date" editrules="{required:true}"></column>
+				<column label="终止日期" name="jsrq"  editable="true" type="date" editrules="{required:true}"></column>
+				<column label="操作" type="operation" >
+					<attribute name="formatoptions"><![CDATA[
+							[
+								{
+									name:"save",
+									icon:"icon-Preservation1",
+									label:"保存",
+									click:save_sbmbxz
+								},
+								{
+									name:"del",
+									icon:"icon-delete",
+									label:"删除",
+									click:delete_sbmbxz
+								}
+							]
+						]]></attribute>
+				</column>
+			</table>
+		</modal-body>
+	</modal>
+	
+	<modal name="sbtz_sbrl_modal" heading="设备日历" sizing="large" show="false" keyboard="false">
+		<modal-body>
+			<bunch name="eventContainer-ajax"></bunch>
+			<bunch layoutconstraint="md:8;">
+				<calendar name="calendar-sbrl" eventscontainer="eventContainer-ajax" 
+					editable="true" selectable="true" droppable="true"
+					fetchurl="/sbtz/getCalendarDays"
+					onSelect="onCalendarSelect"
+					dynamicparam="dyparam"
+					unselectauto="false"
+					>
+					<attribute name="events">
+						<![CDATA[
+							[
+								{
+									title: '工作日',
+									context:'default',
+									allDay: true
+									
+								},
+								{
+									title: '休息日',
+									context:'info',
+									allDay: false
+									
+								}
+							]
+						]]>
+					</attribute>
+				</calendar>
+			</bunch>
+			
+			
+			<form name="sbrl_form"  horizontal="true" 
+				action="/sbtz/saveSbrl" method="post" layoutconstraint = "md:4;">
+				<form-body>
+					<form-group />
+					<form-group />
+					<form-group />
+					<form-group />
+					<form-group />
+					<form-group />
+					<form-group />
+					<form-group />
+					<form-group >
+						<hidden name="hidden_sbids"></hidden>
+						<label for="sbrl_zt" text="状态" layoutconstraint="md:3"/>
+						<select name="sbrl_zt" placeholder="请选择状态" dictionary="sbrl_rlzt" validate="{required:true}"
+									  multiple="false" layoutconstraint="md:9" ></select>
+					</form-group >	
+					<form-group >
+						<label for="sbrl_rl" text="日期" layoutconstraint="md:3"/>
+						<text name="sbrl_rl" readonly="true" layoutconstraint="md:9;" validate="{required:true}" />
+					</form-group>
+					<form-group >		
+						<label for="sbrl_ms" text="描述" layoutconstraint="md:3"/>
+						<textarea name="sbrl_ms" placeholder="日历描述" 
+							readonly="false" layoutconstraint="md:9;" />
+					</form-group>
+					<form-actions>
+						<button name="sbrlSaveButton" label="保存" type="button" context="primary" onClick="sbrlSaveBtnClick"/>
+					</form-actions>
+				</form-body>
+			</form>
+		</modal-body>
+	</modal>
+	<attribute name="javascript">
+	<![CDATA[
+		function addModalOnShown() {
+	   		$('#form_add')[0].reset(); 
+	    	$('#form_add').validate().resetForm();
+	    }		
+	    function openAddWindow(name,rowid) {
+	    	ui.hidden("add_sbid").val(rowid);
+	    	ui.hidden("add_Sign").val(ui.table("table_sbtz").getCell(rowid,"addSign"));
+	    	ui.modal("addModal").show();
+	    }
+	    function closeAddWindow() {
+	    	ui.modal("addModal").hide();
+	    }
+	    function addBtnClick() {
+	    	ui.form("form_add").ajaxSubmit(function(){	
+					ui.success("上传成功！");
+				},function(data){
+					ui.modal("addModal").hide();
+					ui.table("table_sbtz").setCell(ui.hidden("add_sbid").val(), 'sbtpid',data);
+					//ui.table("table_cxgl").reload();
+					//ui.success("保存成功！");
+				},function(){
+					ui.error("保存失败！");
+				});
+	    }
+	   
+	    
+		document.onkeydown=function(event){            
+			var e = event || window.event || arguments.callee.caller.arguments[0];            
+			if(e && e.keyCode==13){     
+			 saveBtnClick();
+			}
+			if(e && e.keyCode==27){    //ESC退出编辑 
+				ui.table("table_sbtz").restoreRow(editid);
+			 	editid = "";
+			}            
+		}; 
+		//记录变量
+		var editid = "";
+		var editsbbh = "";
+		var editsbmc = "";
+		var editsblxid = "";
+		var editsbwz = "";
+		var editccbh = "";
+		var editip = "";
+		var editcj = "";
+		var editjyrq = "";
+		var editzzjgid = "";
+		function editRow(name,rowid){
+			table_sbtzClickrow(rowid,'') ;
+		}
+		//双击进入修改
+		function table_sbtzClickrow(rowid,status) {
+			//变量id不为空,并且数值发生变化提示保存
+			if(("" != editid&&rowid!=editid)&&( editsbbh != $('#'+editid+"_sbbh").val()|| editsbmc != $('#'+editid+"_sbmc").val()|| editsbwz != $('#'+editid+"_sbwz").val()|| editccbh != $('#'+editid+"_ccbh").val()|| editip != $('#'+editid+"_ip").val()|| editcj != $('#'+editid+"_cj").val()|| editjyrq != $('#'+editid+"_jyrq").val())) {
+				ui.confirm("您是否要保存该条记录？", function(data){
+				if(data){
+						saveBtnClick();
+					}else{
+						ui.table("table_sbtz").restoreRow(editid);
+						ui.table("table_sbtz").editRow(rowid);
+						editid = rowid;
+						editsbbh = $('#'+editid+"_sbbh").val();
+						editsbmc = $('#'+editid+"_sbmc").val();
+						editsblxid = $('#'+editid+"_sblxid").val();
+						editsbwz = $('#'+editid+"_sbwz").val();
+						editccbh = $('#'+editid+"_ccbh").val();
+						editip = $('#'+editid+"_ip").val();
+						editcj = $('#'+editid+"_cj").val();
+						editjyrq = $('#'+editid+"_jyrq").val();
+						editzzjgid = $('#'+editid+"_zzjgid").val();
+					}
+				});
+			}else {
+				//未变化直接进入编辑
+				if(rowid!=editid){
+					ui.table("table_sbtz").restoreRow(editid);
+					ui.table("table_sbtz").editRow(rowid);
+					editid = rowid;
+					editsbbh = $('#'+editid+"_sbbh").val();
+					editsbmc = $('#'+editid+"_sbmc").val();
+					editsblxid = $('#'+editid+"_sblxid").val();
+					editsbwz = $('#'+editid+"_sbwz").val();
+					editccbh = $('#'+editid+"_ccbh").val();
+					editip = $('#'+editid+"_ip").val();
+					editcj = $('#'+editid+"_cj").val();
+					editjyrq = $('#'+editid+"_jyrq").val();
+					editzzjgid = $('#'+editid+"_zzjgid").val();
+				}
+				
+			}
+		}
+		function addsbtzRow() {
+			//ui.table("table_sbtz").selectRow(rowid);
+			if(("" != editid)&&( editsbbh != $('#'+editid+"_sbbh").val()|| editsbmc != $('#'+editid+"_sbmc").val()|| editsblxid != $('#'+editid+"_sblxid").val()|| editsbwz != $('#'+editid+"_sbwz").val()|| editccbh != $('#'+editid+"_ccbh").val()|| editip != $('#'+editid+"_ip").val()|| editcj != $('#'+editid+"_cj").val()|| editjyrq != $('#'+editid+"_jyrq").val()|| editzzjgid != $('#'+editid+"_zzjgid").val())) {
+				ui.confirm("您是否要保存该条记录？", function(data){
+				if(data){
+						saveBtnClick();
+					}else{
+						ui.table("table_sbtz").restoreRow(editid);
+						var rowid = (new Date()).getTime();	
+						ui.table("table_sbtz").addRow(rowid,{sbid: rowid,jyrq:(new Date()).getTime() ,addSign:"1"},"first");
+						ui.table("table_sbtz").editRow(rowid);
+						editid = rowid;
+						editsbbh = $('#'+editid+"_sbbh").val();
+						editsbmc = $('#'+editid+"_sbmc").val();
+						editsblxid = $('#'+editid+"_sblxid").val();
+						editsbwz = $('#'+editid+"_sbwz").val();
+						editccbh = $('#'+editid+"_ccbh").val();
+						editip = $('#'+editid+"_ip").val();
+						editcj = $('#'+editid+"_cj").val();
+						editjyrq = $('#'+editid+"_jyrq").val();
+						editzzjgid = $('#'+editid+"_zzjgid").val();
+						
+					}
+				});
+			}else {
+				if('1'==ui.table("table_sbtz").getCell(editid,"addSign"))
+				{
+					ui.warn("请先保存当前设备!", "提示!");
+					return;
+				}
+				ui.table("table_sbtz").restoreRow(editid);
+				var rowid = (new Date()).getTime();	
+				ui.table("table_sbtz").addRow(rowid,{sbid: rowid,jyrq:(new Date()).getTime() ,addSign:"1"},"first");
+				ui.table("table_sbtz").editRow(rowid);
+				editid = rowid;
+				editsbbh = $('#'+editid+"_sbbh").val();
+				editsbmc = $('#'+editid+"_sbmc").val();
+				editsblxid = $('#'+editid+"_sblxid").val();
+				editsbwz = $('#'+editid+"_sbwz").val();
+				editccbh = $('#'+editid+"_ccbh").val();
+				editip = $('#'+editid+"_ip").val();
+				editcj = $('#'+editid+"_cj").val();
+				editjyrq = $('#'+editid+"_jyrq").val();
+				editzzjgid = $('#'+editid+"_zzjgid").val();
+				
+			}
+		}
+		function queryjgrw_Clickrow(rowid,status) {
+			openQueryWindow();
+		}
+		function openQueryWindow() {
+	    	ui.modal("qyeryModal").show();
+	    }
+		function qyeryModalOnShown() {
+	    	resetQueryWindow();
+	    }
+	    function closeQueryWindow() {
+	    	ui.modal("qyeryModal").hide();
+	    }
+	    
+   	    function resetQueryWindow() {
+	    	 $('#qyerysbtzForm')[0].reset();
+	    	 ui.select('query_sbfl').val('');
+	    	 ui.select('query_sblx').val('');
+	    }
+		var rowid;
+	 	function del_sbtz(name,rowid){
+	 		if('1'==ui.table("table_sbtz").getCell(rowid,"addSign"))
+	 		{
+	 			ui.table("table_sbtz").removeRow(rowid);
+	 			return false;
+	 		}
+	 		ui.confirm("您确定要删除该条记录吗？", function(req){
+	 		if(req){
+			$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/sbtz/del_sbtz"),
+		             async: false,
+		             data: {data_list : rowid},
+		             success: function(data){
+		             	ui.table("table_sbtz").reload();
+		             }
+		    });
+		    }
+		    });
+		}
+		
+	 	function edit_sbtz(name,rowid){
+	 		ui.table("table_sbtz").editRow(rowid);
+			ui.table("table_sbtz").selectRow(rowid);
+		}
+		
+		function saveBtnClick(){
+			if(!ui.table("table_sbtz").validate(editid))
+			{
+				ui.warn("请检查录入数据!", "提示!");
+				return false;
+			}
+			var data_list= [];
+			if(""!=editid)
+			{
+				var data_row = {};
+				data_row.sbbh = $('#'+editid+"_sbbh").val();
+				data_row.sbmc = $('#'+editid+"_sbmc").val();
+				data_row.sblxid = $('#'+editid+"_sblxid").val();
+				data_row.sbwz = $('#'+editid+"_sbwz").val();
+				data_row.ccbh = $('#'+editid+"_ccbh").val();
+				data_row.ip = $('#'+editid+"_ip").val();
+				data_row.cj = $('#'+editid+"_cj").val();
+				data_row.jyrq = $('#'+editid+"_jyrq").val();
+				data_row.zzjgid = $('#'+editid+"_zzjgid").val();
+				data_row.addSign = ui.table("table_sbtz").getCell(editid,"addSign");
+				data_row.sbtpid = ui.table("table_sbtz").getCell(editid,"sbtpid");
+				data_row.sbid = editid;
+				data_list.push(data_row);
+			}
+			$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/sbtz/update_sbtz"),
+		             async: false,
+		             data: {data_list : JSON.stringify(data_list)},
+		             success: function(data){
+		             	 if(data.code == 0){
+			                editid = "";
+			             	ui.table("table_sbtz").reload();
+			             	ui.success("保存成功！");
+			             }
+			             else{
+			             	ui.error(data.message,"提示");
+			             }
+		             },
+		             error:function(){
+			            ui.error("保存失败！");
+			         	ui.table("table_sblx").reload();
+		          	}
+		         });
+		}
+		
+		function queryBtnClick(){
+			var data_row = {};
+			data_row.query_sbbh = ui.text('query_sbbh').val();
+			data_row.query_sbmc = ui.text('query_sbmc').val();
+			data_row.query_sbwz = ui.text('query_sbwz').val();
+			data_row.query_ccbh = ui.text('query_ccbh').val();
+			data_row.query_ip = ui.text('query_ip').val();
+			data_row.query_cj = ui.text('query_cj').val();
+			data_row.query_jyrqstart = ui.date('query_jyrqstart').val();
+			data_row.query_jyrqend = ui.date('query_jyrqend').val();
+			data_row.query_sbfl = ui.select('query_sbfl').val();
+			data_row.query_sblx = ui.select('query_sblx').val();
+			data_row.query_ssjg = ui.select('query_ssjg').val();
+			ui.table("table_sbtz").search(data_row);
+			closeQueryWindow();
+		}
+		
+		//加载结束初始化
+		function table_editreset() {
+			editid = "";
+		}
+		
+		//=================================================================设备工时
+		
+		//document.getElementById('table_sbmbxz').onkeydown=function(event){            
+		//	var e = event || window.event || arguments.callee.caller.arguments[0];            
+		//	if(e && e.keyCode==13){     
+		//	 	table_sbmbxz_save();
+		//	}
+		//	if(e && e.keyCode==27){    //ESC退出编辑 
+		//		//ui.table("table_sbtz").restoreRow(editid);
+		//		
+		//	}            
+		//}; 
+		
+		 var sbidParam = "" ;
+		function sbgs_func(){
+			ui.table("table_sbgs").clear();
+			var rows = ui.table("table_sbtz").getSelectedRows();
+			if(rows.length<=0)
+			{
+				ui.alert("请至少选择一台设备");
+				return false;
+			}
+			for(var i in rows){
+				if(rows[i] == editid){
+					ui.warn("正在编辑的设备信息不能选中");
+					return;
+				}
+				sbidParam = rows[0];
+				var row  = ui.table("table_sbtz").getRow(rows[i]);
+				ui.table("table_sbgs").addRow(rowid,{sbid: row.sbid,sbbh:row.sbbh ,sbmc:row.sbmc},"last");
+			}
+			
+			ui.table("table_sbmbxz").clear();
+			if(rows.length == 1){
+				ui.table("table_sbmbxz").search({sbid:sbidParam});
+			}
+			
+			
+			ui.modal("sbgs_Modal").show();
+			
+			table_sbmbxz_addrow();
+		}
+		
+		function table_sbmbxz_addrow(){
+			var rowid = new Date().getTime() ;
+			ui.table("table_sbmbxz").addRow(rowid,{sbgsid:rowid,gsmbid: '',gsmbmc:'' ,gsmbms:'',
+					ksrq:(new Date()).getTime()  ,jsrq:(new Date()).getTime() },"first");
+			
+			ui.table("table_sbmbxz").editRow(rowid);
+			ui.table("table_sbmbxz").selectRow(rowid);
+		}
+		
+		function table_sbmbxz_save(rowid){
+			//单选，只有一个
+			var rowids = ui.table("table_sbgs").getRowids();
+			if(rowids.length==0){
+				ui.warn("没有选择设备");
+				return;
+			}
+			//设备id
+			//var rowid = rowids[0];
+			
+			var sbids ="";
+			for(var i in rowids){
+				sbids = sbids + rowids[i] + ",";
+			}
+			
+			if(!rowid){
+				var selectRow = ui.table("table_sbmbxz").getSelectedRows();
+				rowid = selectRow[0];
+			}
+			
+			ui.table("table_sbmbxz").saveRow(rowid,"saveSbgs?sbids="+sbids,function(){
+				ui.table("table_sbmbxz").search({sbid:sbidParam});
+				table_sbmbxz_addrow();
+			},function(){
+				//errorfunc,
+			})
+			
+		}
+		
+		function delete_sbmbxz(name,rowid){
+			$.ajax({
+		             type: "POST",
+		             url:  ui.getRealUrl("/sbtz/delSbmb"),
+		             async: false,
+		             data: {sbgsid : rowid},
+		             success: function(data){
+						ui.table("table_sbmbxz").removeRow(rowid);
+						
+						var rows = ui.table("table_sbmbxz").getRowids();
+						var rowEditRows= ui.table("table_sbmbxz").getEditRowsData(rows);
+						
+						if(rowEditRows.length ==0){
+							table_sbmbxz_addrow();
+						}
+		             }
+		         });
+		}
+		
+		function save_sbmbxz(name,rowid){
+			table_sbmbxz_save(rowid);
+		}
+		
+		function table_sbmbxzClickrow(rowid,status){
+			ui.table("table_sbmbxz").editRow(rowid);
+			ui.table("table_sbmbxz").selectRow(rowid);
+		}
+		
+		function sbrl_func(name,rowid){
+			var hidden_sbids = ui.hidden("hidden_sbids").val(rowid);
+		
+			ui.modal("sbtz_sbrl_modal").show();
+			ui.modal("sbtz_sbrl_modal").bind("shown",function(){
+				ui.calendar("calendar-sbrl").today();
+				ui.calendar("calendar-sbrl").refetchEvents();
+			})
+		}
+		
+		function dyparam(){
+			var sbid = ui.hidden("hidden_sbids").val();
+	    	return {sbid: sbid };
+	    }
+	    
+	    function onCalendarSelect(start,end){
+			
+			var startStr =  start.format("YYYY/MM/DD");
+			var start_s = start.format("YYYY-MM-DD");
+			var endStr = end.add(-1,'days').format("YYYY/MM/DD");
+			if(startStr == endStr){
+				ui.text("sbrl_rl").val(startStr);
+				var hidden_sbids = ui.hidden("hidden_sbids").val();
+				
+				var regExp = new RegExp(",","g");		
+				var result = hidden_sbids.match(regExp);
+				if(result>1){
+					return;
+				}
+
+				$.ajax({
+		             type: "POST",
+		             url:   ui.getRealUrl("calendarSelect"),
+		             async: false,
+		             data: {rlrq:start_s ,sbids:hidden_sbids },
+		             success: function(data){
+		             
+		             	if(data){
+			             	ui.select("sbrl_zt").val(data.rlzt);
+							ui.textarea("sbrl_ms").val(data.rlms);
+		             	}else{
+		             		ui.select("sbrl_zt").val("");
+							ui.textarea("sbrl_ms").val("");
+		             	}
+		             }
+		         });
+			}else{
+				ui.text("sbrl_rl").val(startStr + "-" + endStr);
+				
+				ui.select("sbrl_zt").val("");
+				ui.textarea("sbrl_ms").val("");
+			}
+	         
+		}
+		
+		function sbrlSaveBtnClick(){
+			ui.form("sbrl_form").ajaxSubmit(function(){	
+				//ui.success("准备Ajax提交 ...");		
+			},function(data){
+				// data 返回保存的这些时间
+				// 当前是工作日还是休息日
+				var zt =  ui.select("sbrl_zt").val();
+				ui.success("保存成功！");
+				// 如果当前是  保存的时间是休息日  并且在当前时间事件中不存在，添加事件
+				// 如果当前 是 保存的时间是工作日  并且在当前时间时间中存在，删除事件
+				for(var d in data){
+					var thisDay = data[d];
+					var events = ui.calendar("calendar-sbrl").getClientEvents(function(event){
+						var start = event.start.format("YYYY/MM/DD") +'';
+						if(thisDay == start){
+							return true;
+						}else{
+							return false;
+						}
+					});
+					//休息日
+					if(("20" == zt || "30" == zt || "40" == zt || "50" ==zt )&& events.length==0){
+						var reg=new RegExp("/","g");
+						thisDay = thisDay.replace(reg,"-");
+						var event ={"start":thisDay,"backgroundColor":"blue","rendering":"background"};
+						ui.calendar("calendar-sbrl").addEvent(event);
+					}
+					//工作日
+					if("10" == zt && events.length==1){
+						ui.calendar("calendar-sbrl").deleteEvent(events[0]);
+					}
+				}
+				
+			},function(){
+				ui.error("页面基本信息 保存失败！");
+			});
+		}
+		
+	]]>
+	</attribute>
+</view>

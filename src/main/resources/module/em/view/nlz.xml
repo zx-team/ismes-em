@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view name="nlz" title="能力组管理">
+	<normal-actions>
+		<button name="addBtn" label="添加"  type="button" icon="icon-Add_to" onClick="add_nlz_func"/>
+		<button name="queryBtn" label="查询"  type="button" icon="icon-query" onClick="query_but_func"/>
+	</normal-actions>
+	<table name="table-nlz" showrownum="false" scroll="false" minheight="430" editurl="" multiselect="false" url="agTable" layoutconstraint="md:12">
+		<column label="能力组id_hidden" name="nlzid" key="true" hidden="true"/>
+		<column label="能力组名称" name="nlzmc" hidden = "false"/>
+		<column label="能力组编号" name="nlzbh" hidden = "false"/>
+		<column label="所属车间id" name="zzjgid" hidden="true"/>
+		<column label="所属车间" name="sscj"/>
+		<column label="所选设备" name="sssb" sortable="false" />
+		<column label="能力组描述" name="nlzms" width="300"/>
+		<column label="操作" name="action"  type="operation">
+		<attribute name="formatoptions"><![CDATA[
+			[
+				{
+					name:"nlz_edit",
+					icon:"icon-edit",
+					label:"编辑",
+					click:handleEdit
+				},
+				{
+					name:"nlz_del",
+					icon:"icon-delete",
+					label:"删除",
+					click:handleDelete
+				}
+			]
+		]]></attribute>
+		</column>
+	</table>
+	
+	<modal name="queryModal" heading="能力组查询" sizing="small" show="false" keyboard="true"  onShown="qyeryModalOnShown">
+		<modal-body>
+			<form name="form-modal"  horizontal="true">
+				<form-body>
+					<form-group>
+						<label for="nlzmc_query" text="能力组名称" layoutconstraint="md:5"/>
+						<text name="nlzmc_query" placeholder="请输入能力组名称"
+							readonly="false" layoutconstraint="md:7;" />
+					</form-group>
+					<form-group>
+						<label for="nlzbh_query" text="能力组编号" layoutconstraint="md:5"/>
+						<text name="nlzbh_query" placeholder="请输入能力组编号"
+							readonly="false" layoutconstraint="md:7;" />
+					</form-group>
+					<form-group>
+						<label for="sscj_query" text="所属车间" layoutconstraint="md:5"/>
+						<text name="sscj_query" placeholder="请输入车间名称"
+							readonly="false" layoutconstraint="md:7;" />
+					</form-group>
+					<form-group>
+						<label for="sbmc_query" text="设备名称" layoutconstraint="md:5"/>
+						<text name="sbmc_query" placeholder="请输入设备名称"
+							readonly="false" layoutconstraint="md:7;" />
+					</form-group>
+				</form-body>
+			</form>
+		</modal-body>
+		<modal-footer>
+			<button name="query" label="查询" type="button" context="primary" onClick ="query_nlz_func"
+							layoutconstraint="md:5;sm:2;md-offset:1"/>
+			<button name="closeModalBtn" label="关闭" type="button" context="primary"
+							layoutconstraint="md:5;sm:2;md-offset:1" onClick="close_query_modal"/>
+		</modal-footer>
+	</modal>
+	
+	<modal name="addEditModal" heading="能力组新增/编辑" sizing="large" show="false" keyboard="true">
+		<modal-body>
+			<form name="form-add_edit-modal"  horizontal="true" >
+				<form-body>
+					<hidden name="nlzid_modal"></hidden>
+					<form-group layoutconstraint="md:12;md-offset:0;">
+						<label for="nlzmc_modal" text="能力组名称" layoutconstraint="md:2"/>
+						<text name="nlzmc_modal" placeholder="请输入能力组名称"
+							readonly="false" layoutconstraint="md:10;" validate="{required:true}"/>
+					</form-group>
+					<form-group layoutconstraint="md:12;md-offset:0;">
+						<label for="nlzbh_modal" text="能力组编号" layoutconstraint="md:2"/>
+						<text name="nlzbh_modal" placeholder="请输入能力组编号"
+							readonly="false" layoutconstraint="md:10;" validate="{required:true}"/>
+					</form-group>
+					<form-group layoutconstraint="md:12;md-offset:0;">
+						<label for="sscj_modal" text="所属车间" layoutconstraint="md:2"/>
+						<select name="sscj_modal" placeholder="请选择所属车间"  validate="{required:true}"
+								  multiple="false" layoutconstraint="md:10" url="sscjSelect" width="200">
+						</select>
+					</form-group>
+					<form-group layoutconstraint="md:12;md-offset:0;">
+						<label for="nlzms_modal" text="能力组描述" layoutconstraint="md:2"/>
+						<textarea name="nlzms_modal" placeholder="请输入能力组描述"
+							readonly="false" layoutconstraint="md:10;" />
+					</form-group>
+					<form-group layoutconstraint="md:12;md-offset:0;">
+						<bunch layoutconstraint="md:12">
+						</bunch>
+					</form-group>
+					<form-group layoutconstraint="md:6;md-offset:0;">
+						<bunch layoutconstraint="md:6;md-offset:0;">
+							<form-group>
+								<label for="select_cj" text="车间" layoutconstraint="md:4"/>
+								<select name="select_cj" placeholder="请选择车间" url="sscjSelect"
+									  multiple="false" layoutconstraint="md:8" onChange="select_cj_change_func" />
+							</form-group>
+							<form-group>
+								<label for="select_sblx" text="设备分类" layoutconstraint="md:4"/>
+								<select name="select_sblx" placeholder="请选择设备分类" dictionary="SBFL"
+									  multiple="false" layoutconstraint="md:8" />
+							</form-group>
+							<form-group>
+								<label for="select_sbxh" text="设备类型" layoutconstraint="md:4;md-offset:0;"/>
+								<select parent="select_sblx" name="select_sbxh" placeholder="请选择设备类型" 
+									  multiple="false" layoutconstraint="md:8" url="sbxhSelect" 
+									  width="200" onChange="select_sbxh_change_func"/>
+							</form-group>
+							<form-group>
+								<label for="select_sb" text="设备" layoutconstraint="md:4"/>
+								<select name="select_sb" placeholder="请选择设备" 
+									  multiple="true" layoutconstraint="md:8" url="sbxxBySblxid" width="200"
+									  onchange="select_sb_func">
+								</select>
+							</form-group>
+						</bunch>	
+							<table name="table-select_sb" showrownum="false" scroll="true"  height="200"
+								editurl="" multiselect="false" url = "" layoutconstraint="md:6"
+								showpager="false" caption="已选设备">
+								<column label="设备id" name="table_sbid" key="true" hidden="true"/>
+								<column label="设备名称" name="table_sbmc"  width="300"/>
+								<column label="操作" name="table_action"  type="operation"  width="120">
+									<attribute name="formatoptions"><![CDATA[
+										[
+											{
+												name:"modal_talbe_del",
+												icon:"icon-delete",
+												label:"删除",
+												click:handle_modal_table_delete
+											}
+										]
+									]]></attribute>
+								</column>
+							</table>
+					</form-group>
+				</form-body>
+			</form >
+		</modal-body>
+		<modal-footer>
+			<button name="save" label="保存" type="button" context="primary" onClick ="save_nlz_func"
+							layoutconstraint="md:1;sm:2;md-offset:4"/>
+			<button name="closeSaveWindowBtn" label="关闭" type="button" context="primary"
+							layoutconstraint="md:1;sm:2;md-offset:3" onClick="close_save_modal"/>
+		</modal-footer>
+	</modal>
+	
+	<attribute name="javascript">
+	<![CDATA[
+		function qyeryModalOnShown() {
+	    	 $('#form-modal')[0].reset();
+	    }
+		
+		function handleDelete(name,rowid){
+			var rowData = ui.table("table-nlz").getRow(rowid);
+			var nlz_list_map = new Array();
+			nlz_list_map.push({nlzid:rowid,nlzmc:rowData.nlzmc});
+			var nlz_list =  JSON.stringify(nlz_list_map);
+			ui.confirm("您确定要删除该条记录吗？",function(res){
+				if(res){
+					$.ajax({
+			             type: "POST",
+			             url:   ui.getRealUrl("nlzDelete"),
+			             async: false,
+			             data: {nlzids : rowid,nlz_list:nlz_list },
+			             success: function(data){
+		             		var canDeleteMcs = data.canDeleteMcs;
+			             	if(canDeleteMcs){
+			             		ui.alert("能力组" + canDeleteMcs + "已经被使用，不能删除！")
+			             	}else{
+			             		ui.table("table-nlz").removeRow(rowid);
+			             	}
+			             }
+			         });
+				}
+			});
+		}
+		
+		function handleEdit(name,rowid){
+			var rowData = ui.table("table-nlz").getRow(rowid);
+			//能力组id
+			ui.hidden("nlzid_modal").val(rowid);
+			//能力组名称 
+	    	ui.text("nlzmc_modal").val(rowData.nlzmc);
+	    	//能力组编号
+	    	ui.text("nlzbh_modal").val(rowData.nlzbh);
+	    	//能力组描述
+	    	ui.textarea("nlzms_modal").val(rowData.nlzms);
+
+			//所属车间
+	    	ui.select("sscj_modal").val(rowData.zzjgid);
+	    	
+	    	$.ajax({
+		             type: "GET",
+		             url:   ui.getRealUrl("getSbxxByNlzid"),
+		             async: false,
+		             data: {nlzid : rowid},
+		             success: function(data){
+		             	var list = data.list;
+		             	if(list.length > 0){
+		             		for(var i = 0 ; i < list.length ; i++){
+		             			ui.table("table-select_sb").addRow(list[i].sbid,{table_sbid: list[i].sbid, table_sbmc: list[i].sbmc,
+									table_action: {name:"modal_talbe_del",icon:"minus",label:"删除",click:handle_modal_table_delete} },"first");
+		             		}
+		             	}
+						ui.modal("addEditModal").show();
+		             }
+			    });
+	    	
+		}
+		function add_nlz_func(){
+			ui.hidden("nlzid_modal").val("");
+			//能力组名称 
+	    	ui.text("nlzmc_modal").val("");
+	    	//能力组描述
+	    	ui.textarea("nlzms_modal").val("");
+	    	//能力组编号
+	    	ui.text("nlzbh_modal").val("");
+	    	
+	    	ui.select("sscj_modal").val("");
+	    	
+	    	//下拉
+	    	ui.select("select_sblx").val("");
+	    	ui.select("select_sbxh").val("");
+	    	ui.select("select_sb").val("");
+	    	//表格
+	    	ui.table("table-select_sb").clear();
+			ui.modal("addEditModal").show();
+		}
+		
+		function query_but_func(){
+			ui.text("nlzmc_query").val("");
+			ui.text("sscj_query").val("");
+			ui.text("nlzbh_query").val("");
+			ui.text("sbmc_query").val("");
+			ui.modal("queryModal").show();
+		}
+		function close_query_modal() {
+	    	ui.modal("queryModal").hide();
+	    }
+	    function query_nlz_func(){
+	    	//能力组名称
+	    	var nlzmc = ui.text("nlzmc_query").val();
+	    	//能力组编号
+	    	var nlzbh = ui.text("nlzbh_query").val();
+	    	//所属车间
+	    	var sscj =  ui.text("sscj_query").val();
+	    	//设备名称
+	    	var sbmc =  ui.text("sbmc_query").val();
+	    	
+	    	ui.table("table-nlz").search(
+				//{nlzmc:nlzmc,sscj:sscj,sbmc:sbmc}
+				{nlzmc:nlzmc,sbmc:sbmc,sscj:sscj,nlzbh:nlzbh}
+			);
+			ui.modal("queryModal").hide();
+	    }
+	    function close_save_modal(){
+	    	ui.hidden("nlzid_modal").val("");
+	    	//能力组名称 
+	    	ui.text("nlzmc_modal").val("");
+	    	//能力组描述
+	    	ui.textarea("nlzms_modal").val("");
+	    	
+	    	ui.text("nlzbh_modal").val("");
+	    	
+	    	ui.select("sscj_modal").val("");
+	    	
+	    	//下拉
+	    	ui.select("select_sblx").val("");
+	    	ui.select("select_sbxh").val("");
+	    	ui.select("select_sb").val("");
+	    	//表格
+	    	ui.table("table-select_sb").clear();
+	    	ui.modal("addEditModal").hide();
+	    }
+	    
+	    //加这个东西纯粹是为了校验时候提示统一
+	    function save_nlz_func(){
+	    	ui.form("form-add_edit-modal").ajaxSubmit(function(){
+	    		//ui.success("准备Ajax提交 ...");		
+	    	},function(){
+	    		save_nlz_func1();
+	    	});
+	    }
+	    
+	    function save_nlz_func1(){
+	    	
+	    	//能力组id为空的时候 是新增  否则是编辑
+	    	var nlzid = ui.hidden("nlzid_modal").val();
+	    	//能力组名称 
+	    	var nlzmc = ui.text("nlzmc_modal").val();
+	    	//能力组编号
+	    	var nlzbh = ui.text("nlzbh_modal").val();
+	    	//能力组描述
+	    	var nlzms = ui.textarea("nlzms_modal").val();
+	    	//所属车间
+	    	var sscj = ui.select("sscj_modal").val();
+	    	
+	    	var nlz_sb_map = new Array();
+	    	var rowids = ui.table("table-select_sb").getRowids(); 
+	    	//设备
+	    	if(!rowids || rowids.length == 0){
+	    		ui.alert("请为能力组选择设备");
+	    		return;
+	    	}
+	    	for(var i = 0 ; i < rowids.length ;i++){
+				var rowid = rowids[i];
+				//var rowData = ui.table("table-select_sb").getRow(rowid);
+				nlz_sb_map.push({sbid : rowid});
+			}
+			var nlz_sb_list =  JSON.stringify(nlz_sb_map);
+	    	
+	    	var sucess = false;
+	    	if(nlzid){
+	    		$.ajax({
+		             type: "POST",
+		             url:   ui.getRealUrl("nlzUpdate"),
+		             async: false,
+		             data: {nlzid : nlzid,nlzmc : nlzmc,nlzms:nlzms,nlzbh:nlzbh,
+		             		sscj:sscj,nlz_sb_list:nlz_sb_list },
+		             success: function(data){
+		             	ui.modal("addEditModal").hide();
+		             	ui.table("table-nlz").reload();
+		             	sucess= true;
+		             }
+			    });
+	    	}else{
+		    	$.ajax({
+		             type: "POST",
+		             url:   ui.getRealUrl("nlzSave"),
+		             async: false,
+		             data: {nlzmc : nlzmc,nlzms:nlzms,nlzbh:nlzbh,sscj:sscj,nlz_sb_list:nlz_sb_list },
+		             success: function(data){
+		             	ui.modal("addEditModal").hide();
+		             	ui.table("table-nlz").reload();
+		             	sucess = true;
+		             }
+			    });
+	    	}
+	    	
+	    	if(sucess){
+		    	ui.hidden("nlzid_modal").val("");
+		    	//能力组名称 
+		    	ui.text("nlzmc_modal").val("");
+		    	//能力组描述
+		    	ui.textarea("nlzms_modal").val("");
+		    	
+		    	ui.text("nlzbh_modal").val("");
+		    	//下拉
+		    	ui.select("select_sblx").val("");
+		    	ui.select("select_sbxh").val("");
+		    	ui.select("select_sb").val("");
+		    	//表格
+		    	ui.table("table-select_sb").clear();
+	    	}else{
+	    		ui.error("保存出现异常");
+	    	}
+	    }
+	    
+	    function select_sb_func(){
+	    	var select_sb_val = ui.select("select_sb").val(); 
+	    	var select_sb_label = ui.select("select_sb").text(); 
+	    	if (typeof(select_sb_val) == "undefined") {
+			   return ;
+			} 
+	    	if(!select_sb_val){
+	    		return ;
+	    	}
+	    	for(var i = 0 ; i < select_sb_val.length ;i++){
+				var sb_id = select_sb_val[i];
+				var rowData = ui.table("table-select_sb").getRow(sb_id);
+				if(!rowData.table_sbid){
+					ui.table("table-select_sb").addRow(sb_id,{table_sbid: sb_id, table_sbmc: select_sb_label[i],
+							table_action: {name:"modal_talbe_del",icon:"minus",label:"删除",click:handle_modal_table_delete} },"first");
+				}
+			}
+	    	
+	    }
+	    
+	    function handle_modal_table_delete(name,rowid){
+			ui.table("table-select_sb").removeRow(rowid);
+	    }
+	    
+	    function select_cj_change_func(){
+	    	var select_cj_value = ui.select("select_cj").val();
+	    	ui.select("select_sb").load({"zzjgid":select_cj_value});
+	    }
+	    
+	    function select_sbxh_change_func(){
+	    	var select_sbxh_value = ui.select("select_sbxh").val();
+	    	ui.select("select_sb").load({"sbxhid":select_sbxh_value});
+	    }
+	]]>
+	</attribute>
+</view>
